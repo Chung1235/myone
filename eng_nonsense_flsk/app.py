@@ -19,11 +19,12 @@ random.shuffle(questions)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('game.html')  # game.html로 수정 (템플릿 이름)
 
 @app.route('/get_question', methods=['GET'])
 def get_question():
     return jsonify(questions)
 
+# Vercel 환경에서는 app.run()을 사용하지 않음
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)  # 이 줄은 Vercel에서는 불필요함
