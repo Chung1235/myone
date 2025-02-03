@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, jsonify
 import random
 
 app = Flask(__name__)
@@ -19,12 +19,8 @@ random.shuffle(questions)
 
 @app.route('/')
 def index():
-    return render_template('game.html')  # game.html로 수정 (템플릿 이름)
+    return render_template('game.html')
 
 @app.route('/get_question', methods=['GET'])
 def get_question():
     return jsonify(questions)
-
-# Vercel 환경에서는 app.run()을 사용하지 않음
-if __name__ == '__main__':
-    app.run(debug=True)  # 이 줄은 Vercel에서는 불필요함
