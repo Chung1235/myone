@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nonsense Quiz</title>
+    <script>
+        let questions = [];
+        let currentQuestion = 0;
+        let score = 0;
+
+        async function loadQuestions() {
+            let response = await fetch("/get_question");
+            questions = await response.json();
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (currentQuestion >= questions.length) {
+                document.getElementById("game").innerHTML = `
+                    <h2>Game Over!</h2>
+                    <p>Your Score: ${score}/${questions.length}</p>
+                    <button onclick="location.reload()">Restart</button>
+                `;
+                return;
+            }
+            document.getElementById("question").textContent = `Question ${currentQuestion + 1}/${questions.length}: ${questions[currentQuestion].question}`;
+            document.getElementById("answer").value = "";
+        }
+
+        function checkAnswer() {
+            let input = document.getElementById("answer").value.toLowerCase();
+            if (input === questions[currentQuestion].answer) {
+                score++;
+            }
+            currentQuestion++;
+            renderQuestion();
+        }
+
+        document.addEventListener("DOMContentLoaded", loadQuestions);
+    </script>
+</head>
+<body>
+    <div id="game">
+        <h2 id="question"></h2>
+        <input type="text" id="answer" placeholder="Your Answer">
+        <button onclick="checkAnswer()">Submit</button>
+    </div>
+</body>
+</html>
