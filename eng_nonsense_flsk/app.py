@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, request, jsonify
 import random
 
 app = Flask(__name__)
@@ -19,8 +19,11 @@ random.shuffle(questions)
 
 @app.route('/')
 def index():
-    return render_template('game.html')
+    return render_template('index.html')
 
 @app.route('/get_question', methods=['GET'])
 def get_question():
     return jsonify(questions)
+
+if __name__ == '__main__':
+    app.run(debug=True)
