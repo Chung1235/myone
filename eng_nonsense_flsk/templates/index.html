@@ -9,42 +9,63 @@
         let questions = [];
         let currentQuestion = 0;
         let score = 0;
+        let gameStarted = false;
 
         async function loadQuestions() {
             let response = await fetch("/get_question");
             questions = await response.json();
-            renderQuestion();
+        }
+
+        function startGame() {
+            if (!gameStarted) {
+                gameStarted = true;
+                document.getElementById("start-screen").style.display = "none";
+                document.getElementById("game").style.display = "block";
+                renderQuestion();
+            }
         }
 
         function renderQuestion() {
             if (currentQuestion >= questions.length) {
-                document.getElementById("game").innerHTML = `
-                                <h2>Game Over!</h2>
-                                <p>Your Score: ${score}/${questions.length}</p>
-                                <button onclick="location.reload()">Restart</button>
-                            `;
+                let resultHTML = `<h2>Game Over!</h2>
+                                  <p>Your Score: ${score}/${questions.length}</p>
+                                  <h3>Answers:</h3>
+                                  <ul>`;
+                questions.forEach(q => {
+                    resultHTML += `<li>${q.question} - <strong>${q.answer.join(", ")}</strong></li>`;
+                });
+                resultHTML += `</ul><button onclick="location.reload()">Restart</button>`;
+                document.getElementById("game").innerHTML = resultHTML;
                 return;
             }
             document.getElementById("question").textContent = `Question ${currentQuestion + 1}/${questions.length}: ${questions[currentQuestion].question}`;
             document.getElementById("answer").value = "";
+            document.getElementById("answer").focus();
         }
 
         function checkAnswer() {
             let input = document.getElementById("answer").value.toLowerCase();
-            if (input === questions[currentQuestion].answer) {
+            if (questions[currentQuestion].answer.includes(input)) {
                 score++;
             }
             currentQuestion++;
             renderQuestion();
         }
 
-        document.addEventListener("DOMContentLoaded", loadQuestions);
+        document.addEventListener("DOMContentLoaded", () => {
+            loadQuestions();
+            document.addEventListener("keydown", startGame);
+        });
     </script>
 </head>
 <body>
-    <div id="game">
+    <div id="start-screen" style="text-align: center; margin-top: 50px;">
+        <h1>Welcome to Nonsense Quiz</h1>
+        <p>Press any key to start</p>
+    </div>
+    <div id="game" style="display: none;">
         <h2 id="question"></h2>
-        <input type="text" id="answer" placeholder="Your Answer">
+        <input type="text" id="answer" placeholder="Your Answer" autofocus>
         <button onclick="checkAnswer()">Submit</button>
     </div>
 </body>
